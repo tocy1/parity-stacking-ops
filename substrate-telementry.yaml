@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: substrate-telementry
+spec:
+  selector:
+    matchLabels:
+      app: substrate-telementry
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: substrate-telementry
+    spec:
+      containers:
+      - name: telementry-backend
+        image: "chevdor/substrate-telemetry-backend"
+        args: ["-l","0.0.0.0:8000"]
+        ports:
+        - name: http
+          containerPort: 8000
+      - name: telementry-frontend
+        image: "chevdor/substrate-telemetry-frontend"
+        ports:
+        - name: http
+          containerPort: 80
+        env:
+        - name: SUBSTRATE_TELEMETRY_URL
+          value: ws://127.0.0.1:8000/feed
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: substrate-telementry
+spec:
+  ports:
+  - name: port-1
+    port: 8000
+    protocol: TCP
+    targetPort: 8000
+  - name: port-2
+    port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: substrate-telementry

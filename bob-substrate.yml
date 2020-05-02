@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: substrate-bob
+spec:
+  selector:
+    matchLabels:
+      app: substrate-bob
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: substrate-bob
+    spec:
+      containers:
+      - name: bob-substrate
+        image: "chevdor/substrate"
+        command: ["/bin/sh","-c"]
+        args: 
+        - "substrate"
+        - "--base-path /tmp/bob"
+        - "--bob"
+        - "--port 30334"
+        - "--ws-port 9945"
+        - "--rpc-port 9934"
+        - "--telemetry-url ws://telementry:8000/submit"        
+        - "--bootnodes /ip4/substrate-alice/tcp/30333/p2p/QmaaMbax5eCFUvJNyWkpQKmppAYi42yfFXghw8TrsbPLD" #Input Unique Alice Node ID
+        ports:
+        - name: port
+          containerPort: 30334
+        - name: ws-port
+          containerPort: 9945
+        - name: rpc-port
+          containerPort: 9935
